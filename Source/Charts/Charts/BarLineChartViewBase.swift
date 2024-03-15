@@ -64,6 +64,12 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
     /// **default**: false
     @objc open var keepPositionOnRotation: Bool = false
     
+    @objc open var pressGestureEnable = true {
+        didSet {
+            _pressGestureRecognizer.isEnabled = pressGestureEnable
+        }
+    }
+    
     /// The left y-axis object. In the horizontal bar-chart, this is the
     /// top axis.
     @objc open internal(set) var leftAxis = YAxis(position: .left)
@@ -576,10 +582,14 @@ open class BarLineChartViewBase: ChartViewBase, BarLineScatterCandleBubbleChartD
             }
             else
             {
-                NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayRemoveHighlight), object: nil)
+                if pressGestureEnable {
+                    NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(delayRemoveHighlight), object: nil)
+                }
                 lastHighlighted = h
                 highlightValue(h, callDelegate: true)
-                perform(#selector(delayRemoveHighlight), with: nil, afterDelay: 0.1)
+                if pressGestureEnable {
+                    perform(#selector(delayRemoveHighlight), with: nil, afterDelay: 0.1)
+                }
             }
         }
     }
